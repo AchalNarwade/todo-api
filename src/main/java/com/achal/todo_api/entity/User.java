@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Getter
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 
 @Table(name = "users")
 public class User {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +37,10 @@ public class User {
     @CreationTimestamp
     @Column(nullable = false,updatable = false)
     private LocalDateTime createdAt;
+
+
+    @OneToMany(mappedBy = "user" , cascade = CascadeType.ALL,orphanRemoval = true)
+    //mapped = "user" tells hibernate that the task entity owns the relationship,don't create another join table
+    private List<Task> tasks = new ArrayList<>();
+
 }
