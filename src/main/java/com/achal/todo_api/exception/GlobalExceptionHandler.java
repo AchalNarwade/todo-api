@@ -36,4 +36,21 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(errors,HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<Map<String,String>> handleInvalidPasswordException(InvalidPasswordException ex){
+        Map<String,String> error = new HashMap<>();
+        error.put("message",ex.getMessage());
+
+        return new ResponseEntity<>(error,HttpStatus.UNAUTHORIZED);
+
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public  ResponseEntity<Map<String,String>> handleUserNotFoundException(UserNotFoundException ex){
+        Map<String,String> error = new HashMap<>();
+        error.put("message", ex.getMessage());
+
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
 }
