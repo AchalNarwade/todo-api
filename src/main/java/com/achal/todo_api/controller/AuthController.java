@@ -1,5 +1,7 @@
 package com.achal.todo_api.controller;
 
+import com.achal.todo_api.dto.auth.LoginRequest;
+import com.achal.todo_api.dto.auth.LoginResponse;
 import com.achal.todo_api.dto.auth.RegisterRequest;
 import com.achal.todo_api.dto.auth.RegisterResponse;
 import com.achal.todo_api.service.UserService;
@@ -24,4 +26,8 @@ public class AuthController {
         return userService.register(request);
     }
 
+    @PostMapping("/login")
+    public LoginResponse login(@Valid @RequestBody LoginRequest loginRequest){
+        return userService.login(loginRequest);
+    }
 }
