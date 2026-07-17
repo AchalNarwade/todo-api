@@ -9,6 +9,7 @@ import com.achal.todo_api.exception.InvalidPasswordException;
 import com.achal.todo_api.exception.UserAlreadyExistsException;
 import com.achal.todo_api.exception.UserNotFoundException;
 import com.achal.todo_api.repository.UserRepository;
+import com.achal.todo_api.security.JwtService;
 import com.achal.todo_api.service.UserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,12 @@ public class UserServiceImpl implements UserService {
 
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
+    private final JwtService jwtService;
+
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder, JwtService jwtService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -55,6 +59,7 @@ public class UserServiceImpl implements UserService {
         )){
             throw new InvalidPasswordException("Invalid password");
         }
-        return new LoginResponse("Login successful");
+        return new LoginResponse("Login successful",
+                jwtService.generateToken(user.getEmail()));
     }
 }
