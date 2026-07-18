@@ -7,6 +7,8 @@ import com.achal.todo_api.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
@@ -21,5 +23,9 @@ public class TaskController {
     @PostMapping
     public TaskResponse createTask(@Valid @RequestBody CreateTaskRequest createTaskRequest){
         return taskService.createTask(createTaskRequest);
+    }
+    @GetMapping
+    public List<TaskResponse> getAllTasks(){
+        return taskService.getAllTasks();
     }
 }

@@ -14,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Service
 public class TaskServiceImpl implements TaskService {
 
@@ -27,8 +30,8 @@ public class TaskServiceImpl implements TaskService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public TaskResponse createTask(CreateTaskRequest createTaskRequest) {
+    //helper method
+    private User getCurrentUser() {
         //Get current authentication
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -43,8 +46,14 @@ public class TaskServiceImpl implements TaskService {
         String email = userDetails.getUsername();
 
         //Find User entity
-        User user = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+    }
+
+    @Override
+    public TaskResponse createTask(CreateTaskRequest createTaskRequest) {
+
+        User user = getCurrentUser();
 
         //create task object
         Task task = Task.builder()
@@ -63,5 +72,24 @@ public class TaskServiceImpl implements TaskService {
                 savedTask.getStatus(),
                 savedTask.getCreatedAt()
         );
+    }
+
+    @Override
+    public List<TaskResponse> getAllTasks() {
+        User user = getCurrentUser();
+        List<Task>tasks = taskRepository.findByUser(user);
+
+        List<TaskResponse> taskResponses = new ArrayList<>();
+        for(Task task:tasks){
+            TaskResponse taskResponse = new TaskResponse(
+                    task.getId(),
+                    task.getTitle(),
+                    task.getDescription(),
+                    task.getStatus(),
+                    task.getCreatedAt()
+            );
+            taskResponses.add(taskResponse);
+        }
+        return taskResponses;
     }
 }
