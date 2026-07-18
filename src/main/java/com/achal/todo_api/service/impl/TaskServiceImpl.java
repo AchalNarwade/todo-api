@@ -2,17 +2,20 @@ package com.achal.todo_api.service.impl;
 
 import com.achal.todo_api.dto.task.CreateTaskRequest;
 import com.achal.todo_api.dto.task.TaskResponse;
+import com.achal.todo_api.dto.task.UpdateTaskRequest;
 import com.achal.todo_api.entity.Task;
 import com.achal.todo_api.entity.TaskStatus;
 import com.achal.todo_api.repository.TaskRepository;
 import com.achal.todo_api.repository.UserRepository;
 import com.achal.todo_api.service.TaskService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import com.achal.todo_api.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -92,4 +95,52 @@ public class TaskServiceImpl implements TaskService {
         }
         return taskResponses;
     }
+
+    public TaskResponse getTaskById(Long id){
+        User user = getCurrentUser();
+        Task task = taskRepository
+                .findByIdAndUser(id,user)
+                .orElseThrow(()-> new RuntimeException("Task not found"));
+        return new TaskResponse(
+                task.getId(),
+                task.getTitle(),
+                task.getDescription(),
+                task.getStatus(),
+                task.getCreatedAt()
+        );
+    }
+
+    @Override
+    public TaskResponse updateTask(Long id, UpdateTaskRequest updateTaskRequest) {
+        User user = getCurrentUser();
+
+        Task task = taskRepository.findByIdAndUser(id,user)
+                .orElseThrow(()-> new RuntimeException("Task not found"));
+        task.setTitle(updateTaskRequest.getTitle());
+        task.setDescription(updateTaskRequest.getDescription());
+        task.setStatus(updateTaskRequest.getStatus());
+
+        Task updatedTask = taskRepository.save(task);
+
+        return new TaskResponse(
+                updatedTask.getId(),
+                updatedTask.getTitle(),
+                updatedTask.getDescription(),
+                updatedTask.getStatus(),
+                updatedTask.getCreatedAt()
+        );
+    }
+
+    @Override
+    public void deleteTask(Long id) {
+        User user = getCurrentUser();
+
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found")
+                );
+        taskRepository.delete(task);
+    }
+
+
 }
