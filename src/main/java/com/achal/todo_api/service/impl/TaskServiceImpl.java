@@ -5,6 +5,7 @@ import com.achal.todo_api.dto.task.TaskResponse;
 import com.achal.todo_api.dto.task.UpdateTaskRequest;
 import com.achal.todo_api.entity.Task;
 import com.achal.todo_api.entity.TaskStatus;
+import com.achal.todo_api.exception.TaskNotFoundException;
 import com.achal.todo_api.repository.TaskRepository;
 import com.achal.todo_api.repository.UserRepository;
 import com.achal.todo_api.service.TaskService;
@@ -100,7 +101,7 @@ public class TaskServiceImpl implements TaskService {
         User user = getCurrentUser();
         Task task = taskRepository
                 .findByIdAndUser(id,user)
-                .orElseThrow(()-> new RuntimeException("Task not found"));
+                .orElseThrow(()-> new TaskNotFoundException("Task not found"));
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
@@ -136,9 +137,7 @@ public class TaskServiceImpl implements TaskService {
         User user = getCurrentUser();
 
         Task task = taskRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found")
-                );
+                .orElseThrow(() -> new TaskNotFoundException("Task not found"));
         taskRepository.delete(task);
     }
 

@@ -1,6 +1,7 @@
 package com.achal.todo_api.exception;
 
 
+import com.achal.todo_api.entity.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -53,4 +54,13 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<Map<String,String>> handleTaskNotFoundException(TaskNotFoundException ex){
+        Map<String,String> error = new HashMap<>();
+        error.put("message",ex.getMessage());
+
+        return new ResponseEntity<>(error,HttpStatus.NOT_FOUND);
+    }
+
 }
