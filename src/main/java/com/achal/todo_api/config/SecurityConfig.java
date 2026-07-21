@@ -34,7 +34,10 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)); //disable session
 
         http.authorizeHttpRequests(auth -> {
-            auth.requestMatchers("/api/auth/**").permitAll(); //this should not require login as all public
+            auth.requestMatchers("/api/auth/**",
+                    "/swagger-ui/**",
+                    "/swagger-ui.html",
+                    "/v3/api-docs/**").permitAll(); //this should not require login as all public
             auth.anyRequest().authenticated(); //else authenticate except that
         });
         http.httpBasic(httpBasic -> httpBasic.disable()); //disable HTTP basic authentication
